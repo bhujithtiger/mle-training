@@ -1,2 +1,14 @@
 datasets
-*.ipynb
+try_it_out.ipynb
+nonstandardcode.py
+/logs
+/.venv
+/.pytest_cache
+/.hypothesis
+/results
+src/module/__pycache__
+src/test/__pycache__
+/docs
+/results
+/models/random_forest_regressor.pkl
+/encoders/one_hot_encoder_ocean_proximity.pkl
