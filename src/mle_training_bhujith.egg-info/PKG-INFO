@@ -1,3 +1,16 @@
+Metadata-Version: 2.1
+Name: mle-training-bhujith
+Version: 0.0.1
+Summary: Helps you to predict housing prices using Random Forest model
+Home-page: https://github.com/bhujithtiger/mle-training
+Author: Bhujith Madav Velmurugan
+Author-email: bhujith.velmurug@tigeranalytics.com
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+
 # Median housing value prediction
 
 Objective - We will be predicting the housing prices using machine learning models
@@ -60,48 +73,4 @@ conda env export > env.yml
 
 python <script-name>
 ```
-
-## To create docs
-
-**sphinx-quickstart** command creates the setup files for generation
-
-**sphinx-apidoc -o docs src** command creates the rst files in docs folder, for packages in the src folder. It is important that each module within the src package has **__init__.py** file.
-
-**src\make.bat html** command generates the html files for the packages
-
-```shell
-mkdir docs
-
-pip install sphinx sphinx-autobuild sphinx_rtd_theme
-
-sphinx-quickstart
-
-sphinx-apidoc -o docs src
-
-src\make.bat html
-```
-
-## To convert into package
-
-Create setup.py file and run the following commands
-
-twine package is used to verify the package installation and upload to PyPI
-
-```shell
-pip install wheel twine
-
-python setup.py sdist
-
-python setup.py bdist_wheel
-
-twine check dist/*
-
-twine upload dist/*
-```
-
-
-
-
-
-
 
