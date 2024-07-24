@@ -12,3 +12,4 @@ src/test/__pycache__
 /results
 /models/random_forest_regressor.pkl
 /encoders/one_hot_encoder_ocean_proximity.pkl
+/images
