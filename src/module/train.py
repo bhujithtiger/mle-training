@@ -8,6 +8,11 @@ from sklearn.metrics import mean_squared_error
 from scipy.stats import randint
 import pickle
 import logging
+import mlflow
+
+remote_server_uri = "http://localhost:8000"
+mlflow.set_tracking_uri(remote_server_uri)
+mlflow.set_experiment("PredictingHousingPrices")
 
 """
 This file contains the functions to
@@ -57,6 +62,16 @@ def save_model(output_path, model, filename="model.pkl"):
                 {"model": model, "columns": list(model.feature_names_in_)}, file
             )
         logger.info(f"SAVED MODEL SUCCESSFULLY AT {filepath}")
+
+        with mlflow.start_run(run_name="Model logging", nested=True) as run:
+            mlflow.log_artifact(filepath)
+
+        run_id = run.info.run_id
+
+        mlflow.end_run()
+
+        return run_id
+
     except Exception as e:
         logger.error(f"ERROR WHILE SAVING MODEL {str(e)}")
 
@@ -174,11 +189,30 @@ def build_and_train_model(datasets_location, model_output_location):
             f"Testing set RMSE {np.sqrt(mean_squared_error(y_test, pred_test))}"
         )
 
-        save_model(
+        model_artifact_run_id = save_model(
             model_output_location,
             randomForestRegressor,
             filename="random_forest_regressor.pkl",
         )
+
+        with mlflow.start_run(run_name="Model Training", nested=True) as run:
+            for key, value in params_with_lowest_rmse.items():
+                mlflow.log_param(key, value)
+            mlflow.log_metrics(
+                {
+                    "training_set_rmse": np.sqrt(
+                        mean_squared_error(y_train, pred_train)
+                    ),
+                    "testing_set_rmse": np.sqrt(mean_squared_error(y_test, pred_test)),
+                }
+            )
+        model_params_and_metrics_run_id = run.info.run_id
+
+        mlflow.end_run()
+
+        print(f"train py {model_artifact_run_id} {model_params_and_metrics_run_id}")
+
+        return model_artifact_run_id, model_params_and_metrics_run_id
 
     except Exception as e:
         logger.error(f"ERROR WHILE BUILDING AND TRAINING MODEL {str(e)}")

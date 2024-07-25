@@ -12,6 +12,17 @@ from sklearn.model_selection import (
 )
 import logging
 import pickle
+import sys
+import mlflow
+
+remote_server_uri = "http://localhost:8000"
+mlflow.set_tracking_uri(remote_server_uri)
+mlflow.set_experiment("PredictingHousingPrices")
+
+# Ensure the src directory is in the PYTHONPATH for direct script execution
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+
+from src.module.helper import CombinedAttributesAdder
 
 """This file contains the functions
 
@@ -197,28 +208,29 @@ def preprocess_dataset(set_, output_path):
     Returns:
         pd.DataFrame: The preprocessed dataset.
     """
-    # try:
-    set_["rooms_per_household"] = set_["total_rooms"] / set_["households"]
-    set_["bedrooms_per_room"] = set_["total_bedrooms"] / set_["total_rooms"]
-    set_["population_per_household"] = set_["population"] / set_["households"]
+    try:
+        attr_adder = CombinedAttributesAdder()
+        set_ = attr_adder.transform(set_)
 
-    cat_cols = list(set_.select_dtypes(include=["object", "category"]).columns)
+        cat_cols = list(set_.select_dtypes(include=["object", "category"]).columns)
 
-    for col in cat_cols:
-        encoder = get_one_hot_encoder(output_path, col, f"one_hot_encoder_{col}.pkl")
-        tmp = pd.DataFrame(
-            encoder.transform(set_[[col]]).toarray(),
-            columns=encoder.get_feature_names_out(),
-        )
-        set_ = pd.concat([set_, tmp], axis=1)
-        set_ = set_.drop([col], axis=1)
+        for col in cat_cols:
+            encoder = get_one_hot_encoder(
+                output_path, col, f"one_hot_encoder_{col}.pkl"
+            )
+            tmp = pd.DataFrame(
+                encoder.transform(set_[[col]]).toarray(),
+                columns=encoder.get_feature_names_out(),
+            )
+            set_ = pd.concat([set_, tmp], axis=1)
+            set_ = set_.drop([col], axis=1)
 
-    logger.info("DATSET PREPROCESSED SUCCESSFULLY")
+        logger.info("DATSET PREPROCESSED SUCCESSFULLY")
 
-    return set_
+        return set_
 
-    # except Exception as e:
-    #     logger.error(f"ERROR WHILE PROCESSING DATASET {str(e)}")
+    except Exception as e:
+        logger.error(f"ERROR WHILE PROCESSING DATASET {str(e)}")
 
 
 def create_datasets(df, output_path, filename):
@@ -240,6 +252,18 @@ def create_datasets(df, output_path, filename):
 
     if os.path.exists(file_path):
         logger.info(f"DATASET SPLIT, PROCESSED AND STORED AT {file_path}")
+
+        with mlflow.start_run(
+            run_name=f"Data Ingestion {filename}", nested=True
+        ) as run:
+            mlflow.log_artifact(file_path)
+
+        run_id = run.info.run_id
+
+        mlflow.end_run()
+        print(f"ingest data {run_id}")
+        return run_id
+
     else:
         logger.info("ERROR WHILE STORING FILE")
 
@@ -258,7 +282,13 @@ if __name__ == "__main__":
     train_set, test_set = split_dataset(housing_dataset)
 
     train_set_processed = preprocess_dataset(train_set, args.output_path)
+
     test_set_processed = preprocess_dataset(test_set, args.output_path)
 
-    create_datasets(train_set_processed, args.output_path, "train.csv")
-    create_datasets(test_set_processed, args.output_path, "test.csv")
+    mlflow_training_set_run_id = create_datasets(
+        train_set_processed, args.output_path, "train.csv"
+    )
+
+    mlflow_testing_set_run_id = create_datasets(
+        test_set_processed, args.output_path, "test.csv"
+    )

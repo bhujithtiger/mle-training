@@ -1,11 +1,14 @@
 import pandas as pd
 import numpy as np
 import os
+from sklearn.base import BaseEstimator, TransformerMixin
 
 """
 This file contains the functions to
 
     Generate sample datasets for running unit tests
+
+    Custom transformers for preprocessing datasets
 """
 
 
@@ -45,3 +48,22 @@ def generate_dataset_for_testing():
         return df_sample
     else:
         print("ERROR IN ACCESSING FILES")
+
+
+class CombinedAttributesAdder(BaseEstimator, TransformerMixin):
+    def __init__(self):  # no *args or **kwargs
+        # column index
+        self.col_names = ["total_rooms", "total_bedrooms", "population", "households"]
+
+    def fit(self, X, y=None):
+        for col in self.col_names:
+            if col not in X.columns:
+                raise ValueError(f"{col} not found in X")
+
+        return self
+
+    def transform(self, X):
+        X["rooms_per_household"] = X["total_rooms"] / X["households"]
+        X["population_per_household"] = X["population"] / X["households"]
+        X["bedrooms_per_room"] = X["total_bedrooms"] / X["total_rooms"]
+        return X
