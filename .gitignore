@@ -11,4 +11,10 @@ src/test/__pycache__
 /docs
 /results
 /models/random_forest_regressor.pkl
+<<<<<<< Updated upstream
 /encoders/one_hot_encoder_ocean_proximity.pkl
+=======
+/encoders/one_hot_encoder_ocean_proximity.pkl
+/images
+/mlruns
+>>>>>>> Stashed changes

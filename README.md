@@ -99,6 +99,48 @@ twine check dist/*
 twine upload dist/*
 ```
 
+## How to install and run the package
+
+### Using pip with Wheel
+
+``` shell
+pip install mle_training_bhujith-0.0.2-py3-none-any.whl
+```
+
+### Using source distribution
+
+```shell
+pip install mle_training_bhujith-0.0.2.tar.gz
+```
+
+### Running the package
+
+    Create conda environment using the command
+
+    ```shell
+    conda env create --file env.yml
+    conda activate mle-dev
+    ```
+
+    Create a folder named logs to store the logs
+
+    Start mlflow server in your local machine using the command
+
+    ```shell
+    mlflow server --default-artifact-root ./mlruns --host 0.0.0.0 --port 8000
+    ```
+
+    Initiate model creation, training and deployment using the command
+
+    ```shell
+    python -m mle_training_bhujith
+    ```
+
+    This command will preprocess the datasets, build models and make predictions using them. The logs will be created in the logs directory and the metrics and artifacts will be logged in the mlflow server.
+
+
+
+
 
 
 

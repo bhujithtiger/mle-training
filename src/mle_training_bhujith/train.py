@@ -32,7 +32,7 @@ else:
     logger.setLevel(logging.DEBUG)
 
     # Create a file handler
-    file_handler = logging.FileHandler("logs\\train.log")
+    file_handler = logging.FileHandler(os.path.join("logs", "train.log"))
     file_handler.setLevel(logging.DEBUG)  # Set the file handler logging level
 
     # Create a formatter and set it for the handler

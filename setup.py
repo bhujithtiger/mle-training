@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="mle_training_bhujith",
-    version="0.0.1",
+    version="0.0.2",
     description="Helps you to predict housing prices using Random Forest model",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
@@ -11,6 +11,7 @@ setup(
     url="https://github.com/bhujithtiger/mle-training",
     packages=find_packages(where="src"),
     package_dir={"": "src"},
+    include_package_data=True,  # Use MANIFEST.in to include extra files
     install_requires=["numpy", "pandas", "pytest", "scikit-learn"],
     classifiers=[
         "Programming Language :: Python :: 3",

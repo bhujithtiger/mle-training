@@ -20,9 +20,9 @@ mlflow.set_tracking_uri(remote_server_uri)
 mlflow.set_experiment("PredictingHousingPrices")
 
 # Ensure the src directory is in the PYTHONPATH for direct script execution
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from src.module.helper import CombinedAttributesAdder
+from .helper import CombinedAttributesAdder
 
 """This file contains the functions
 
