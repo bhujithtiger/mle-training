@@ -2,14 +2,14 @@ import os
 import sys
 
 # Ensure the src directory is in the PYTHONPATH for direct script execution
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import argparse
 import pickle
 from datetime import datetime
 import pandas as pd
 import logging
-from src.module.ingest_data import get_one_hot_encoder, preprocess_dataset
+from .ingest_data import get_one_hot_encoder, preprocess_dataset
 import mlflow
 
 remote_server_uri = "http://localhost:8000"

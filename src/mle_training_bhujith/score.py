@@ -2,14 +2,14 @@ import os
 import sys
 
 # Ensure the src directory is in the PYTHONPATH for direct script execution
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
+# sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
 import argparse
 import pickle
 from datetime import datetime
 import pandas as pd
 import logging
-from src.module.ingest_data import get_one_hot_encoder, preprocess_dataset
+from .ingest_data import get_one_hot_encoder, preprocess_dataset
 import mlflow
 
 remote_server_uri = "http://localhost:8000"
@@ -32,7 +32,7 @@ else:
     logger.setLevel(logging.DEBUG)
 
     # Create a file handler
-    file_handler = logging.FileHandler("logs\\score.log")
+    file_handler = logging.FileHandler(os.path.join("logs", "scores.log"))
     file_handler.setLevel(logging.DEBUG)  # Set the file handler logging level
 
     # Create a formatter and set it for the handler
@@ -61,6 +61,10 @@ def load_model(model_location):
             data = pickle.load(file)
             model = data.get("model")
             column_names = data.get("columns")
+            print(f" Check Model {model}")
+            logger.info(f" Check Model {model}")
+            print(f"Check column names {column_names}")
+            logger.info(f"Check column names {column_names}")
         if model and len(column_names) > 0:
             logger.info("MODEL LOADED SUCCESSFULLY")
         return model, column_names
@@ -112,7 +116,7 @@ def make_predictions(datasets_path, model_location, output_location="results"):
         logger.info(
             "NO VALID FILE FOUND FOR MAKING PREDICTIONS. MAKING PREDICTIONS ON TESTING SET"
         )
-        df = pd.read_csv("datasets\\processed\\test.csv")
+        df = pd.read_csv(os.path.join("datasets", "processed", "test.csv"))
 
     if "median_house_value" in df.columns:
         df = df.drop("median_house_value", axis=1)
