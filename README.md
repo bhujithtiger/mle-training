@@ -74,11 +74,13 @@ mkdir docs
 
 pip install sphinx sphinx-autobuild sphinx_rtd_theme
 
+cd docs
+
 sphinx-quickstart
 
 sphinx-apidoc -o docs src
 
-src\make.bat html
+docs\make.bat html
 ```
 
 ## To convert into package

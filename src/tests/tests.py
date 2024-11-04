@@ -6,8 +6,8 @@ import os
 # Ensure the src directory is in the PYTHONPATH for direct script execution
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
 
-from module.ingest_data import split_dataset, preprocess_dataset
-from module.helper import generate_dataset_for_testing
+from src.module.ingest_data import split_dataset, preprocess_dataset
+from src.module.helper import generate_dataset_for_testing
 
 """
 This file contains the functions to

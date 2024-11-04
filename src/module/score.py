@@ -10,6 +10,11 @@ from datetime import datetime
 import pandas as pd
 import logging
 from src.module.ingest_data import get_one_hot_encoder, preprocess_dataset
+import mlflow
+
+remote_server_uri = "http://localhost:8000"
+mlflow.set_tracking_uri(remote_server_uri)
+mlflow.set_experiment("PredictingHousingPrices")
 
 
 """
@@ -77,7 +82,8 @@ def make_predictions(datasets_path, model_location, output_location="results"):
     """
     os.makedirs(output_location, exist_ok=True)
     output_filepath = os.path.join(
-        output_location, f"predictions_{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}"
+        output_location,
+        f"predictions_{datetime.now().strftime('%Y-%m-%d-%H-%M-%S')}.csv",
     )
 
     model, column_names = load_model(model_location)
@@ -114,8 +120,17 @@ def make_predictions(datasets_path, model_location, output_location="results"):
     predictions = model.predict(df)
     predictions_df = pd.DataFrame(predictions, columns=["predictions"])
     predictions_df.to_csv(output_filepath, index=False)
+
     if os.path.exists(output_filepath):
         logger.info("PREDICTIONS CSV FILE SAVED SUCCESSFULLY")
+
+        with mlflow.start_run(run_name="logging predictions", nested=True) as run:
+            mlflow.log_artifact(output_filepath)
+
+        run_id = run.info.run_id
+        mlflow.end_run()
+        print(f"score py {run_id}")
+        return run_id
     else:
         logger.info("FAILURE IN SAVING PREDICTIONS")
 
